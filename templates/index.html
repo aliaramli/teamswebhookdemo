@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Teams Channel Messenger</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="message-panel" aria-labelledby="page-title">
+        <p class="eyebrow">Channel message</p>
+        <h1 id="page-title">Send to Microsoft Teams</h1>
+        <p class="intro">Write a message for the configured Teams channel.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="notice notice-{{ category }}" role="status">{{ message }}</div>
+          {% endfor %}
+        {% endwith %}
+
+        <form method="post">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" maxlength="4000" required autofocus placeholder="Share an update with the channel"></textarea>
+          <div class="form-footer">
+            <span>Up to 4,000 characters</span>
+            <button type="submit">Send message</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>
