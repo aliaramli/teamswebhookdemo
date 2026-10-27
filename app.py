@@ -20,7 +20,8 @@ class TeamsWebhookError(RuntimeError):
     """A webhook error that can be shown without exposing the URL."""
 
 
-def build_teams_payload(message: str) -> dict:
+def build_teams_payload() -> dict:
+    rto_date = datetime.now().astimezone().strftime("%d %b %Y")
     sent_at = datetime.now().astimezone().strftime("%d %b %Y, %H:%M %Z")
     return {
         "type": "message",
@@ -37,7 +38,7 @@ def build_teams_payload(message: str) -> dict:
                         "style": "emphasis",
                         "items": [{
                             "type": "TextBlock",
-                            "text": "Channel update",
+                            "text": "RTO update",
                             "size": "Medium",
                             "weight": "Bolder",
                             "wrap": True,
@@ -48,13 +49,13 @@ def build_teams_payload(message: str) -> dict:
                         "spacing": "Medium",
                         "items": [{
                             "type": "TextBlock",
-                            "text": message,
+                            "text": f"Alia will RTO today, {rto_date}",
                             "wrap": True,
                         }],
                     },
                     {
                         "type": "TextBlock",
-                        "text": f"Sent from Webhook Messenger | {sent_at}",
+                        "text": f"Sent from RTO app | {sent_at}",
                         "spacing": "Medium",
                         "isSubtle": True,
                         "size": "Small",
@@ -66,13 +67,13 @@ def build_teams_payload(message: str) -> dict:
     }
 
 
-def send_to_teams(message: str) -> None:
+def send_to_teams() -> None:
     webhook_url = os.environ.get("TEAMS_WEBHOOK_URL")
     if not webhook_url:
         raise RuntimeError("TEAMS_WEBHOOK_URL is not configured.")
 
     try:
-        response = requests.post(webhook_url, json=build_teams_payload(message), timeout=10)
+        response = requests.post(webhook_url, json=build_teams_payload(), timeout=10)
         response.raise_for_status()
     except requests.HTTPError as error:
         status_code = error.response.status_code if error.response is not None else "unknown"
@@ -86,22 +87,15 @@ def send_to_teams(message: str) -> None:
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
-        message = request.form.get("message", "").strip()
-
-        if not message:
-            flash("Enter a message before sending it.", "error")
-        elif len(message) > 4_000:
-            flash("Messages must be 4,000 characters or fewer.", "error")
+        try:
+            send_to_teams()
+        except TeamsWebhookError as error:
+            app.logger.exception("Teams webhook request failed")
+            flash(str(error), "error")
+        except RuntimeError as error:
+            flash(str(error), "error")
         else:
-            try:
-                send_to_teams(message)
-            except TeamsWebhookError as error:
-                app.logger.exception("Teams webhook request failed")
-                flash(str(error), "error")
-            except RuntimeError as error:
-                flash(str(error), "error")
-            else:
-                flash("Message sent to Teams.", "success")
+            flash("RTO notice sent to Teams.", "success")
 
         return redirect(url_for("index"))
 

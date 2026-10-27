@@ -1,6 +1,6 @@
-# Teams Channel Messenger
+# RTO Teams Notification
 
-A small Flask webpage that posts messages to a Microsoft Teams channel using an incoming webhook.
+A small Flask webpage with one `RTO` button. Selecting it posts `Alia will RTO today, <today's date>` to the configured Microsoft Teams channel using an incoming webhook.
 
 ## Setup
 
@@ -14,7 +14,7 @@ A small Flask webpage that posts messages to a Microsoft Teams channel using an 
    .\.venv\Scripts\Activate.ps1
    ```
 
-5. Install dependencies and start the webpage:
+5. Install dependencies and start the app:
 
    ```powershell
    pip install -r requirements.txt

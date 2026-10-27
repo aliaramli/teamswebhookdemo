@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Teams Channel Messenger</title>
+    <title>RTO</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   </head>
   <body>
     <main class="page-shell">
       <section class="message-panel" aria-labelledby="page-title">
-        <p class="eyebrow">Channel message</p>
-        <h1 id="page-title">Send to Microsoft Teams</h1>
-        <p class="intro">Write a message for the configured Teams channel.</p>
+        <p class="eyebrow">Teams notification</p>
+        <h1 id="page-title">RTO</h1>
+        <p class="intro">Send today's return-to-office notice to Teams.</p>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% for category, message in messages %}
@@ -19,13 +19,8 @@
           {% endfor %}
         {% endwith %}
 
-        <form method="post">
-          <label for="message">Message</label>
-          <textarea id="message" name="message" maxlength="4000" required autofocus placeholder="Share an update with the channel"></textarea>
-          <div class="form-footer">
-            <span>Up to 4,000 characters</span>
-            <button type="submit">Send message</button>
-          </div>
+        <form class="rto-form" method="post">
+          <button type="submit">RTO</button>
         </form>
       </section>
     </main>
